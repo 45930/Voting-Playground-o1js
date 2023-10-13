@@ -1,5 +1,5 @@
+import { Ballot, Election } from './Election';
 import { AccountUpdate, Mina, PrivateKey, PublicKey } from 'o1js';
-import { Ballot, Election } from './Election.js';
 
 describe("Election", () => {
     let privilegedAddress: PublicKey;
@@ -58,7 +58,8 @@ describe("Election", () => {
             await tx.prove();
             await tx.sign([senderKey]).send();
             console.timeEnd('vote on ballot 1');
-            expect(zkapp.ballot1.get().toBigInts()).toBe([0n, 0n, 1n, 0n, 0n, 0n, 0n]);
+            const zkappState = zkapp.ballot1.get();
+            expect(String(zkappState.toBigInts())).toBe(String([0n, 0n, 1n, 0n, 0n, 0n, 0n]));
         });
     });
 });
