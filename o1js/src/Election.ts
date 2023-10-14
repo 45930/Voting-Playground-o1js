@@ -1,14 +1,25 @@
 import { SmartContract, state, State, method, UInt32 } from 'o1js';
 import { PackedUInt32Factory } from 'o1js-pack';
+import { MultiPackedStringFactory } from 'o1js-pack/build/src/lib/packed-types/PackedString';
 
+export class IpfsHash extends MultiPackedStringFactory(4) {}
 export class Ballot extends PackedUInt32Factory() {}
 
 export class Election extends SmartContract {
+  @state(IpfsHash) electionDetailsIpfs = State<IpfsHash>();
   @state(Ballot) ballot1 = State<Ballot>();
 
   init() {
     super.init();
+    this.electionDetailsIpfs.set(IpfsHash.fromString(''));
     this.ballot1.set(Ballot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 0n]));
+  }
+
+  @method
+  setElectionDetails(electionDetailsIpfs: IpfsHash) {
+    this.electionDetailsIpfs.getAndAssertEquals();
+    this.electionDetailsIpfs.assertEquals(IpfsHash.fromString(''));
+    this.electionDetailsIpfs.set(electionDetailsIpfs);
   }
 
   @method
