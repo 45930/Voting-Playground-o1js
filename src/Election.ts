@@ -1,6 +1,5 @@
 import { SmartContract, state, State, method, UInt32 } from 'o1js';
-import { PackedUInt32Factory } from 'o1js-pack';
-import { MultiPackedStringFactory } from 'o1js-pack/build/src/lib/packed-types/PackedString';
+import { PackedUInt32Factory, MultiPackedStringFactory } from 'o1js-pack';
 
 export class IpfsHash extends MultiPackedStringFactory(4) {}
 export class Ballot extends PackedUInt32Factory() {}
