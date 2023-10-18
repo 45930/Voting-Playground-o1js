@@ -1,4 +1,4 @@
-const ELECTION_DETAILS_KEY = 'B62qkwgSvxwZgXfwbYxwZRFZUD8HvsMke2jqz7iAaJ5ekpWHMWvJriK';
+const ELECTION_DETAILS_KEY = 'QmaNtrsFkKzF4KxEbdSoSdWr8XoVSdGRYri1U4b8beqwgX';
 
 import { Mina, PrivateKey } from 'o1js';
 import fs from 'fs/promises';

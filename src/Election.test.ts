@@ -27,7 +27,7 @@ describe("Election", () => {
         sender = Local.testAccounts[0].publicKey;
         senderKey = Local.testAccounts[0].privateKey;
 
-    
+
         // a special account that is allowed to pull out half of the zkapp balance, once
         privilegedKey = PrivateKey.random();
         privilegedAddress = privilegedKey.toPublicKey();
@@ -37,27 +37,37 @@ describe("Election", () => {
         it("Updates the State", async () => {
             console.time('deploy');
             let tx = await Mina.transaction(sender, () => {
-            let senderUpdate = AccountUpdate.fundNewAccount(sender);
-            senderUpdate.send({ to: zkappAddress, amount: initialBalance });
-            zkapp.deploy({ zkappKey });
+                let senderUpdate = AccountUpdate.fundNewAccount(sender);
+                senderUpdate.send({ to: zkappAddress, amount: initialBalance });
+                zkapp.deploy({ zkappKey });
             });
             await tx.prove();
             await tx.sign([senderKey]).send();
             console.timeEnd('deploy');
-        
+
             console.log(
-            'initial state: ',
-            zkapp.ballot1.get().toBigInts(),
+                'initial state: ',
+                zkapp.ballot1.get().toBigInts(),
             );
-        
+
             console.time('vote on ballot 1');
             tx = await Mina.transaction(sender, () => {
-            const myVote = Ballot.fromBigInts([0n, 0n, 1n, 0n, 0n, 0n, 0n]);
-            zkapp.castBallot1(myVote);
+                const myVote = Ballot.fromBigInts([0n, 0n, 1n, 0n, 0n, 0n, 0n]);
+                zkapp.castBallot1(myVote);
             });
             await tx.prove();
             await tx.sign([senderKey]).send();
             console.timeEnd('vote on ballot 1');
+
+            console.time('roll up votes');
+            tx = await Mina.transaction(sender, () => {
+                zkapp.reduceVotes();
+            });
+            await tx.prove();
+            await tx.sign([senderKey]).send();
+            console.timeEnd('roll up votes');
+
+
             const zkappState = zkapp.ballot1.get();
             expect(String(zkappState.toBigInts())).toBe(String([0n, 0n, 1n, 0n, 0n, 0n, 0n]));
         });
