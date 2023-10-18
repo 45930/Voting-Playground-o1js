@@ -4,8 +4,8 @@
     "berkeley": {
       "url": "https://proxy.berkeley.minaexplorer.com/graphql",
       "keyPath": "keys/berkeley.json",
-      "feepayerKeyPath": "/Users/cobydurling/.cache/zkapp-cli/keys/election-deployer.json",
-      "feepayerAlias": "election-deployer",
+      "feepayerKeyPath": "/Users/cobydurling/.cache/zkapp-cli/keys/berkeley_.json",
+      "feepayerAlias": "berkeley_",
       "fee": "0.1",
       "smartContract": "Election"
     }
