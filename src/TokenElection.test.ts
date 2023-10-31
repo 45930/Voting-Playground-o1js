@@ -58,6 +58,12 @@ describe("TokenElection", () => {
       await tx.prove();
       await tx.sign([senderKey]).send();
       console.timeEnd('vote on ballot 1');
+
+      const tx2 = await Mina.transaction(sender, () => {
+        zkapp.reduceVotes();
+      })
+      await tx2.prove();
+      await tx2.sign([senderKey]).send();
       const zkappState = zkapp.ballot1.get();
       expect(String(zkappState.toBigInts())).toBe(String([0n, 0n, 100n, 0n, 10n, 0n, 0n]));
     });
