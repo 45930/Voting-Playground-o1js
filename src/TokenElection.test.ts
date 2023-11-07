@@ -1,4 +1,4 @@
-import { Ballot, TokenElection } from './TokenElection';
+import { Ballot, PartialBallot, TokenElection } from './TokenElection';
 import { AccountUpdate, Mina, PrivateKey, PublicKey, UInt32 } from 'o1js';
 
 describe("TokenElection", () => {
@@ -60,8 +60,13 @@ describe("TokenElection", () => {
       tx = await Mina.transaction(sender, () => {
         let senderUpdate = AccountUpdate.fundNewAccount(sender);
         zkapp.faucet(sender);
-        const myVote = Ballot.fromBigInts([0n, 0n, 100n, 0n, 10n, 0n, 0n]);
-        zkapp.castBallot(myVote, UInt32.from(110));
+        const partialBallot1 = PartialBallot.fromBigInts([0n, 0n, 100n, 0n, 0n, 0n, 0n]);
+        const partialBallot2 = PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 10n]);
+        const myVote = new Ballot({
+          partial1: partialBallot1,
+          partial2: partialBallot2
+        })
+        zkapp.castVote(myVote, UInt32.from(110));
       });
       await tx.prove();
       await tx.sign([senderKey]).send();
@@ -74,7 +79,10 @@ describe("TokenElection", () => {
       await tx2.prove();
       await tx2.sign([senderKey]).send();
       const zkappState = zkapp.ballot.get();
-      expect(String(zkappState.toBigInts())).toBe(String([0n, 0n, 100n, 0n, 10n, 0n, 0n]));
+      const pb1 = zkappState.partial1;
+      const pb2 = zkappState.partial2;
+      expect(String(pb1.toBigInts())).toBe(String([0n, 0n, 100n, 0n, 0n, 0n, 0n]));
+      expect(String(pb2.toBigInts())).toBe(String([0n, 0n, 0n, 0n, 0n, 0n, 10n]));
     });
 
     it("has the correct number of tokens remaining", async () => {

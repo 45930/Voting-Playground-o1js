@@ -7,7 +7,7 @@
       "feepayerKeyPath": "/Users/cobydurling/.cache/zkapp-cli/keys/berkeley_.json",
       "feepayerAlias": "berkeley_",
       "fee": "0.1",
-      "smartContract": "Election"
+      "smartContract": "TokenElection"
     }
   }
 }

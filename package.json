@@ -49,6 +49,6 @@
     },
     "dependencies": {
         "o1js-pack": "^0.4.2",
-        "zkapp-cli": "^0.13.0"
+        "zkapp-cli": "^0.15.0"
     }
 }
