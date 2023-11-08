@@ -51,6 +51,7 @@ let zkAppAddress = PublicKey.fromBase58(zkAppAddressInput)
 let zkApp = new TokenElection(zkAppAddress);
 await fetchAccount({ publicKey: zkAppAddress });
 
+console.log(zkApp.actionState.get().toString())
 // compile the contract to create prover keys
 console.log('compile the contract...');
 await TokenElection.compile();

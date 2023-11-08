@@ -69,6 +69,7 @@ export class TokenElection extends SmartContract {
   @method
   reduceVotes() {
     const actionState = this.actionState.getAndAssertEquals();
+    const ballot = this.ballot.getAndAssertEquals();
     let pendingActions = this.reducer.getActions({
       fromActionState: actionState,
     });

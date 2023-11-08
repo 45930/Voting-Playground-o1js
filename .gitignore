@@ -12,4 +12,4 @@ coverage
 # Never commit keys to Git!
 keys
 
-config.json
+*.json
