@@ -10,6 +10,9 @@ const rl = readline.createInterface({ input, output });
 
 const zkAppAddressInput = await rl.question(`At what address is the ZK App Deployed?\n`);
 
+const votes = JSON.parse(await fs.readFile('./src/examples/ZkIgnite/votes.json', 'utf8'));
+console.log(votes)
+
 const confirm = await rl.question(`Votes in votes.json are correct?  Y/n\n`);
 
 rl.close();
@@ -57,8 +60,6 @@ let zkAppAddress = PublicKey.fromBase58(zkAppAddressInput)
 let zkApp = new TokenElection(zkAppAddress);
 await fetchAccount({ publicKey: zkAppAddress });
 
-const votes = JSON.parse(await fs.readFile('./src/examples/ZkIgnite/votes.json', 'utf8'));
-console.log(votes)
 const partialBallot1 = new Array(7).fill(0n);
 const partialBallot2 = new Array(7).fill(0n);
 let sum = 0;

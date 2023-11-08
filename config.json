@@ -3,7 +3,7 @@
   "deployAliases": {
     "berkeley": {
       "url": "https://proxy.berkeley.minaexplorer.com/graphql",
-      "keyPath": "keys/berkeley.json",
+      "keyPath": "keys/berkeley_2.json",
       "feepayerKeyPath": "/Users/cobydurling/.cache/zkapp-cli/keys/berkeley-deployer.json",
       "feepayerAlias": "berkeley-deployer",
       "fee": "0.1",
