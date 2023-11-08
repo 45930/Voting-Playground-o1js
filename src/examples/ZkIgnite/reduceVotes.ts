@@ -10,13 +10,7 @@ const rl = readline.createInterface({ input, output });
 
 const zkAppAddressInput = await rl.question(`At what address is the ZK App Deployed?\n`);
 
-const confirm = await rl.question(`Votes in votes.json are correct?  Y/n\n`);
-
 rl.close();
-
-if (confirm.toLowerCase() != 'y') {
-  throw new Error("Update votes.json, then continue")
-}
 
 let deployAlias = 'berkeley'
 Error.stackTraceLimit = 1000;
@@ -57,50 +51,26 @@ let zkAppAddress = PublicKey.fromBase58(zkAppAddressInput)
 let zkApp = new TokenElection(zkAppAddress);
 await fetchAccount({ publicKey: zkAppAddress });
 
-const votes = JSON.parse(await fs.readFile('./src/examples/ZkIgnite/votes.json', 'utf8'));
-console.log(votes)
-const partialBallot1 = new Array(7).fill(0n);
-const partialBallot2 = new Array(7).fill(0n);
-let sum = 0;
-for (let key in votes) {
-  const keyNum = Number(key)
-  if (keyNum < 7) {
-    partialBallot1[keyNum] = BigInt(votes[key])
-    sum += Number(votes[key])
-  } else if (keyNum < 14) {
-    partialBallot2[keyNum - 7] = BigInt(votes[key])
-    sum += Number(votes[key])
-  } else {
-    throw new Error("KeyError: Vote keys must be numeric between 0-13")
-  }
-}
-const ballot = new Ballot({
-  partial1: PartialBallot.fromBigInts(partialBallot1),
-  partial2: PartialBallot.fromBigInts(partialBallot2),
-});
-console.log(`Submitting Votes: ${(partialBallot1.concat(partialBallot2)).map(x => String(x)).join(",")}`)
-let sentTx;
 // compile the contract to create prover keys
 console.log('compile the contract...');
 await TokenElection.compile();
+let reduceTx;
 try {
   // Join the election by minting tokens to yourself
-  console.log('build transaction and create proof...');
   let tx = await Mina.transaction({ sender: feepayerAddress, fee }, () => {
-    zkApp.castVote(ballot, UInt32.from(sum))
+    zkApp.reduceVotes();
   });
   await tx.prove();
-  console.log('send transaction...');
-  sentTx = await tx.sign([feepayerKey]).send();
+  reduceTx = await tx.sign([feepayerKey]).send();
 } catch (err) {
   console.log(err);
 }
-if (sentTx?.hash() !== undefined) {
+if (reduceTx?.hash() !== undefined) {
   console.log(`
 Success! Update transaction sent.
 
 Your smart contract state will be updated
 as soon as the transaction is included in a block:
-https://berkeley.minaexplorer.com/transaction/${sentTx.hash()}
+https://berkeley.minaexplorer.com/transaction/${reduceTx.hash()}
 `);
 }

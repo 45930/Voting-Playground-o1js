@@ -102,5 +102,6 @@ export class TokenElection extends SmartContract {
       );
 
     this.ballot.set(newVotes);
+    this.actionState.set(newActionState);
   }
 }
