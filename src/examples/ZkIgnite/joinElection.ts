@@ -1,17 +1,18 @@
-const ELECTION_DETAILS_KEY = 'QmPKD74Pfc6aH5Suh1EXqjbfKBYDs5QVARxmpqsNKMKxe3';
-
-import { Mina, PrivateKey } from 'o1js';
+import { AccountUpdate, Mina, PrivateKey, PublicKey, fetchAccount } from 'o1js';
+import { TokenElection, IpfsHash } from './../../TokenElection.js';
 import fs from 'fs/promises';
-import { TokenElection, IpfsHash } from './TokenElection.js';
 
-// check command line arg
-let deployAlias = process.argv[2];
-if (!deployAlias)
-  throw Error(`Missing <deployAlias> argument.
+import * as readline from 'node:readline/promises';  // This uses the promise-based APIs
+import { stdin as input, stdout as output } from 'node:process';
 
-Usage:
-node build/src/interact.js <deployAlias>
-`);
+
+const rl = readline.createInterface({ input, output });
+
+const zkAppAddressInput = await rl.question(`At what address is the ZK App Deployed?\n`);
+
+rl.close();
+
+let deployAlias = 'berkeley'
 Error.stackTraceLimit = 1000;
 
 // parse config and private key from file
@@ -36,27 +37,27 @@ let feepayerKeysBase58: { privateKey: string; publicKey: string } = JSON.parse(
 let zkAppKeysBase58: { privateKey: string; publicKey: string } = JSON.parse(
   await fs.readFile(config.keyPath, 'utf8')
 );
-
 let feepayerKey = PrivateKey.fromBase58(feepayerKeysBase58.privateKey);
-let zkAppKey = PrivateKey.fromBase58(zkAppKeysBase58.privateKey);
+let feepayerAddress = feepayerKey.toPublicKey();
 
 // set up Mina instance and contract we interact with
 const Network = Mina.Network(config.url);
 const fee = Number(config.fee) * 1e9; // in nanomina (1 billion = 1.0 mina)
 Mina.setActiveInstance(Network);
-let feepayerAddress = feepayerKey.toPublicKey();
-let zkAppAddress = zkAppKey.toPublicKey();
+let zkAppAddress = PublicKey.fromBase58(zkAppAddressInput)
 let zkApp = new TokenElection(zkAppAddress);
+await fetchAccount({ publicKey: zkAppAddress });
 
 let sentTx;
 // compile the contract to create prover keys
 console.log('compile the contract...');
 await TokenElection.compile();
 try {
-  // call update() and send transaction
+  // Join the election by minting tokens to yourself
   console.log('build transaction and create proof...');
   let tx = await Mina.transaction({ sender: feepayerAddress, fee }, () => {
-    zkApp.setElectionDetails(IpfsHash.fromString(ELECTION_DETAILS_KEY));
+    let senderUpdate = AccountUpdate.fundNewAccount(feepayerAddress);
+    zkApp.faucet(feepayerAddress);
   });
   await tx.prove();
   console.log('send transaction...');

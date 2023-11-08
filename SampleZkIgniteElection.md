@@ -51,3 +51,47 @@ Below is a list of proposals for Zk Ignite (the list is real, but the election i
 - Proposer: blahblahblah
 - Funding Requested: $xxx
 - Link to proposal: [Proposal 579](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/579)
+
+#### Index 7: Educational Video Series And Podcast For Community
+
+- Proposer: blahblahblah
+- Funding Requested: $xxx
+- Link to proposal: [Proposal 482](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/482)
+
+#### Index 8: zkApp Umstad: AI Agent for zkApp Builders
+
+- Proposer: blahblahblah
+- Funding Requested: $xxx
+- Link to proposal: [Proposal 531](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/531)
+
+#### Index 9: Mina Playground Improvements / New Features
+
+- Proposer: blahblahblah
+- Funding Requested: $xxx
+- Link to proposal: [Proposal 549](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/549)
+
+#### Index 10: zkNotary: a zkOracle for Mina powered by TLSNotary
+
+- Proposer: blahblahblah
+- Funding Requested: $xxx
+- Link to proposal: [Proposal 550](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/550)
+
+#### Index 11: zkApps / Ecosystem Hub and zkApp Testing Groups.
+
+- Proposer: blahblahblah
+- Funding Requested: $xxx
+- Link to proposal: [Proposal 477](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/477)
+
+#### Index 12: zkApp.store - A zkApp marketplace for Mina Protocol
+
+- Proposer: blahblahblah
+- Funding Requested: $xxx
+- Link to proposal: [Proposal 485](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/485)
+
+#### Index 13: Privacy token on mina
+
+- Proposer: blahblahblah
+- Funding Requested: $xxx
+- Link to proposal: [Proposal 507](https://zkignite.minaprotocol.com/zkignite/dev4dev/funded/suggestion/507)
+
+
