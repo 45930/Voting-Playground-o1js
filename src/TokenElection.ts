@@ -45,18 +45,13 @@ export class TokenElection extends SmartContract {
   castVote(vote: Ballot, amount: UInt32) {
     const unpackedVote1 = PartialBallot.unpack(vote.partial1.packed);
     const unpackedVote2 = PartialBallot.unpack(vote.partial2.packed);
-    const ballot = this.ballot.getAndAssertEquals();
-    const unpackedPartialBallot1 = PartialBallot.unpack(ballot.partial1.packed);
-    const unpackedPartialBallot2 = PartialBallot.unpack(ballot.partial2.packed);
 
     let voteSum = UInt32.from(0);
     for (let i = 0; i < PartialBallot.l; i++) {
       voteSum = voteSum.add(unpackedVote1[i]);
-      unpackedPartialBallot1[i] = unpackedPartialBallot1[i].add(unpackedVote1[i]);
     }
     for (let i = 0; i < PartialBallot.l; i++) {
       voteSum = voteSum.add(unpackedVote2[i]);
-      unpackedPartialBallot2[i] = unpackedPartialBallot1[i].add(unpackedVote2[i]);
     }
     voteSum.assertEquals(amount); // sum of votes must equal asserted amount (can vote for multiple options)
     this.token.burn({
@@ -68,8 +63,9 @@ export class TokenElection extends SmartContract {
 
   @method
   reduceVotes() {
+    this.ballot.getAndAssertEquals();
     const actionState = this.actionState.getAndAssertEquals();
-    const ballot = this.ballot.getAndAssertEquals();
+
     let pendingActions = this.reducer.getActions({
       fromActionState: actionState,
     });

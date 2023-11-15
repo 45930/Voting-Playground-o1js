@@ -10,9 +10,9 @@ You will need to have a funded account on the testnet and the ability to clone t
 2. Install the dependencies and build the project `npm i && npm run build`
   - run `zk config` and use 'berkeley' as your deploy alias
 3. Access the vote details `node build/src/examples/ZKIgnite/getElectionDetails.js`
-  - When prompted for the contract, enter: B62qp3CPDr6VZTYMNuU4tNzgoSN52jg2ZbZdgARk883dv1YrRZ6CUsP
+  - When prompted for the contract, enter: B62qoMByycorTLENUAvV6Zr1gEfE5KERWSq1AanzPfc8dvKB8d1f3ka
 4. Opt-in as an elector `node build/src/examples/ZKIgnite/joinElection.js`
-  - When prompted for the contract, enter: B62qp3CPDr6VZTYMNuU4tNzgoSN52jg2ZbZdgARk883dv1YrRZ6CUsP
+  - When prompted for the contract, enter: B62qoMByycorTLENUAvV6Zr1gEfE5KERWSq1AanzPfc8dvKB8d1f3ka
   - You will need to sign this transaction, but in a more realistic scenario, Mina Foundation would decide who is eligible to be an elector.
 5. Review the election details from step 3 and decide how you would like to vote.  You may vote for as many projects as you like, as long as the total vote amount is less than 50,000, since that is the balance you have to work with.
 6. Submit your votes: `node build/src/examples/ZKIgnite/submitVotes.js`
