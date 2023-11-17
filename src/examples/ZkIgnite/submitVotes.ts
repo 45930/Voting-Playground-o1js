@@ -76,8 +76,8 @@ for (let key in votes) {
   }
 }
 const ballot = new Ballot({
-  partial1: PartialBallot.fromBigInts(partialBallot1),
-  partial2: PartialBallot.fromBigInts(partialBallot2),
+  partial1: PartialBallot.fromBigInts(partialBallot1).packed,
+  partial2: PartialBallot.fromBigInts(partialBallot2).packed,
 });
 console.log(`Submitting Votes: ${(partialBallot1.concat(partialBallot2)).map(x => String(x)).join(",")}`)
 let sentTx;

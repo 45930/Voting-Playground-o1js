@@ -1,12 +1,12 @@
-import { SmartContract, state, State, method, UInt32, AccountUpdate, UInt64, Reducer, Field, PublicKey, Struct } from 'o1js';
+import { SmartContract, state, State, method, UInt32, AccountUpdate, UInt64, Reducer, Field, PublicKey, Struct, Provable } from 'o1js';
 import { PackedUInt32Factory, MultiPackedStringFactory } from 'o1js-pack';
 
 export class IpfsHash extends MultiPackedStringFactory(4) { }
 export class PartialBallot extends PackedUInt32Factory() { }
 
 export class Ballot extends Struct({
-  partial1: PartialBallot,
-  partial2: PartialBallot
+  partial1: Field,
+  partial2: Field
 }) { }
 
 export class TokenElection extends SmartContract {
@@ -20,8 +20,8 @@ export class TokenElection extends SmartContract {
     super.init();
     this.electionDetailsIpfs.set(IpfsHash.fromString(''));
     this.ballot.set({
-      partial1: PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 0n]),
-      partial2: PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 0n])
+      partial1: PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 0n]).packed,
+      partial2: PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 0n]).packed
     });
     this.actionState.set(Reducer.initialActionState);
   }
@@ -43,8 +43,8 @@ export class TokenElection extends SmartContract {
 
   @method
   castVote(vote: Ballot, amount: UInt32) {
-    const unpackedVote1 = PartialBallot.unpack(vote.partial1.packed);
-    const unpackedVote2 = PartialBallot.unpack(vote.partial2.packed);
+    const unpackedVote1 = PartialBallot.unpack(vote.partial1);
+    const unpackedVote2 = PartialBallot.unpack(vote.partial2);
 
     let voteSum = UInt32.from(0);
     for (let i = 0; i < PartialBallot.l; i++) {
@@ -63,7 +63,7 @@ export class TokenElection extends SmartContract {
 
   @method
   reduceVotes() {
-    this.ballot.getAndAssertEquals();
+    const ballot = this.ballot.getAndAssertEquals();
     const actionState = this.actionState.getAndAssertEquals();
 
     let pendingActions = this.reducer.getActions({
@@ -75,10 +75,10 @@ export class TokenElection extends SmartContract {
         pendingActions,
         Ballot,
         (state: Ballot, _action: Ballot) => {
-          const unpackedState1 = PartialBallot.unpack(state.partial1.packed);
-          const unpackedState2 = PartialBallot.unpack(state.partial2.packed);
-          const unpackedAction1 = PartialBallot.unpack(_action.partial1.packed);
-          const unpackedAction2 = PartialBallot.unpack(_action.partial2.packed);
+          const unpackedState1 = PartialBallot.unpack(state.partial1);
+          const unpackedState2 = PartialBallot.unpack(state.partial2);
+          const unpackedAction1 = PartialBallot.unpack(_action.partial1);
+          const unpackedAction2 = PartialBallot.unpack(_action.partial2);
           for (let i = 0; i < PartialBallot.l; i++) {
             unpackedState1[i] = unpackedState1[i].add(unpackedAction1[i])
           }
@@ -86,15 +86,15 @@ export class TokenElection extends SmartContract {
             unpackedState2[i] = unpackedState2[i].add(unpackedAction2[i])
           }
           return {
-            partial1: PartialBallot.fromUInt32s(unpackedState1),
-            partial2: PartialBallot.fromUInt32s(unpackedState2)
+            partial1: PartialBallot.fromUInt32s(unpackedState1).packed,
+            partial2: PartialBallot.fromUInt32s(unpackedState2).packed
           }
         },
         {
-          state: {
-            partial1: new PartialBallot(Field(0)),
-            partial2: new PartialBallot(Field(0)),
-          }, actionState: actionState
+          state: new Ballot({
+            partial1: ballot.partial1,
+            partial2: ballot.partial2,
+          }), actionState: actionState
         }
       );
 

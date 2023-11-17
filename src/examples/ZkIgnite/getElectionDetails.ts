@@ -3,6 +3,7 @@ import { TokenElection, IpfsHash } from './../../TokenElection.js';
 
 import * as readline from 'node:readline/promises';  // This uses the promise-based APIs
 import { stdin as input, stdout as output } from 'node:process';
+import { PartialBallot } from '../../PackedTokensElection.js';
 
 const rl = readline.createInterface({ input, output });
 
@@ -23,8 +24,8 @@ console.log(`
 `)
 
 const ballot = zkApp.ballot.get();
-const partial1 = ballot.partial1.toBigInts()
-const partial2 = ballot.partial2.toBigInts()
+const partial1 = new PartialBallot(ballot.partial1).toBigInts();
+const partial2 = new PartialBallot(ballot.partial2).toBigInts();
 const totalVotes = (partial1.concat(partial2)).map(x => String(x)).join(",")
 
 console.log(`
