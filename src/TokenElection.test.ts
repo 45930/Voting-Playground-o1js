@@ -2,10 +2,8 @@ import { Ballot, PartialBallot, TokenElection } from './TokenElection';
 import { AccountUpdate, Mina, PrivateKey, PublicKey, UInt32 } from 'o1js';
 
 describe("TokenElection", () => {
-  let privilegedAddress: PublicKey;
   let zkappAddress: PublicKey;
   let sender: PublicKey;
-  let privilegedKey: PrivateKey;
   let zkappKey: PrivateKey;
   let senderKey: PrivateKey;
   let initialBalance = 10_000_000_000;
@@ -26,11 +24,6 @@ describe("TokenElection", () => {
 
     sender = Local.testAccounts[0].publicKey;
     senderKey = Local.testAccounts[0].privateKey;
-
-
-    // a special account that is allowed to pull out half of the zkapp balance, once
-    privilegedKey = PrivateKey.random();
-    privilegedAddress = privilegedKey.toPublicKey();
   });
 
   describe("Votes in the TokenElection", () => {
@@ -44,11 +37,6 @@ describe("TokenElection", () => {
       sender = Local.testAccounts[0].publicKey;
       senderKey = Local.testAccounts[0].privateKey;
 
-
-      // a special account that is allowed to pull out half of the zkapp balance, once
-      privilegedKey = PrivateKey.random();
-      privilegedAddress = privilegedKey.toPublicKey();
-
       let tx = await Mina.transaction(sender, () => {
         let senderUpdate = AccountUpdate.fundNewAccount(sender);
         senderUpdate.send({ to: zkappAddress, amount: initialBalance });
@@ -60,6 +48,11 @@ describe("TokenElection", () => {
       tx = await Mina.transaction(sender, () => {
         let senderUpdate = AccountUpdate.fundNewAccount(sender);
         zkapp.faucet(sender);
+      });
+      await tx.prove();
+      await tx.sign([senderKey]).send();
+
+      tx = await Mina.transaction(sender, () => {
         const partialBallot1 = PartialBallot.fromBigInts([0n, 0n, 100n, 0n, 0n, 0n, 0n]);
         const partialBallot2 = PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 10n]);
         const myVote = new Ballot({

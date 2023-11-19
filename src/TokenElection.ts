@@ -91,10 +91,7 @@ export class TokenElection extends SmartContract {
           }
         },
         {
-          state: new Ballot({
-            partial1: ballot.partial1,
-            partial2: ballot.partial2,
-          }), actionState: actionState
+          state: ballot, actionState: actionState
         }
       );
 

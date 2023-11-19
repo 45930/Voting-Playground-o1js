@@ -1,4 +1,6 @@
-import { SmartContract, state, State, method, UInt32, Struct, UInt64, PublicKey, fetchAccount, Mina } from 'o1js';
+// This class does not work - account updates are too expensive to do this way.
+
+import { SmartContract, state, State, method, UInt32, Struct, UInt64, PublicKey, fetchAccount, Mina, Account } from 'o1js';
 import { PackedUInt32Factory, MultiPackedStringFactory } from 'o1js-pack';
 
 export class IpfsHash extends MultiPackedStringFactory(4) { }
@@ -46,6 +48,46 @@ export class PackedTokensElection extends SmartContract {
   }
 
   @method
+  initProposalsA() {
+    for (let i = 0; i < 4; i++) {
+      this.token.mint({
+        address: PublicKey.fromBase58(PROPOSAL_VOTE_ADDRESSES[i]),
+        amount: 1
+      });
+    }
+  }
+
+  @method
+  initProposalsB() {
+    for (let i = 4; i < 7; i++) {
+      this.token.mint({
+        address: PublicKey.fromBase58(PROPOSAL_VOTE_ADDRESSES[i]),
+        amount: 1
+      });
+    }
+  }
+
+  @method
+  initProposalsC() {
+    for (let i = 7; i < 11; i++) {
+      this.token.mint({
+        address: PublicKey.fromBase58(PROPOSAL_VOTE_ADDRESSES[i]),
+        amount: 1
+      });
+    }
+  }
+
+  @method
+  initProposalsD() {
+    for (let i = 11; i < PROPOSAL_VOTE_ADDRESSES.length; i++) {
+      this.token.mint({
+        address: PublicKey.fromBase58(PROPOSAL_VOTE_ADDRESSES[i]),
+        amount: 1
+      });
+    }
+  }
+
+  @method
   faucet(toAddress: PublicKey) {
     /**
      * Create a new Elector with state:
@@ -68,10 +110,11 @@ export class PackedTokensElection extends SmartContract {
 
   @method
   castVote(vote: Ballot, amount: UInt32) {
-    const currentTokenBalance = Mina.getBalance(this.sender, this.tokenId);
+    const account = Account(this.sender, this.token.id);
+    const currentTokenBalance = account.balance.getAndAssertEquals();
     const existingElector = Elector.unpack(currentTokenBalance.value);
-    existingElector[0].assertLessThan(UInt32.from(MAX_BALLOTS), `This user has already voted ${MAX_BALLOTS} times in this election`);
-    existingElector[1].assertGreaterThanOrEqual(amount, `Existing user balance: ${existingElector[1]} is not enough for requested vote amount: ${amount}`);
+    existingElector[0].assertGreaterThanOrEqual(amount, `Existing user balance is not enough for requested vote amount`);
+    existingElector[1].assertLessThan(UInt32.from(MAX_BALLOTS), `This user has already voted ${MAX_BALLOTS} times in this election`);
 
     const unpackedVote1 = PartialBallot.unpack(vote.partial1.packed);
     const unpackedVote2 = PartialBallot.unpack(vote.partial2.packed);
@@ -102,7 +145,7 @@ export class PackedTokensElection extends SmartContract {
       amount: currentTokenBalance
     });
 
-    const newElector = Elector.fromUInt32s([existingElector[0].add(1), existingElector[1].sub(amount)]) // incr num_ballots and decr voting balance
+    const newElector = Elector.fromUInt32s([existingElector[0].sub(amount), existingElector[1].add(1)]) // incr num_ballots and decr voting balance
     this.token.mint({
       address: this.sender,
       amount: UInt64.from(newElector.packed)
