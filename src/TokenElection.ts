@@ -9,12 +9,18 @@ export class Ballot extends Struct({
   partial2: Field
 }) { }
 
+export class VoteAction extends Struct({
+  ballot: Ballot,
+  sender: PublicKey,
+  amount: UInt64
+}) { }
+
 export class TokenElection extends SmartContract {
   @state(IpfsHash) electionDetailsIpfs = State<IpfsHash>();
   @state(Ballot) ballot = State<Ballot>();
   @state(Field) actionState = State<Field>();
 
-  reducer = Reducer({ actionType: Ballot });
+  reducer = Reducer({ actionType: VoteAction });
 
   init() {
     super.init();
@@ -54,11 +60,11 @@ export class TokenElection extends SmartContract {
       voteSum = voteSum.add(unpackedVote2[i]);
     }
     voteSum.assertEquals(amount); // sum of votes must equal asserted amount (can vote for multiple options)
-    this.token.burn({
-      address: this.sender,
+    this.reducer.dispatch({
+      ballot: vote,
+      sender: this.sender,
       amount: UInt64.from(amount)
     });
-    this.reducer.dispatch(vote);
   }
 
   @method
@@ -74,17 +80,21 @@ export class TokenElection extends SmartContract {
       this.reducer.reduce(
         pendingActions,
         Ballot,
-        (state: Ballot, _action: Ballot) => {
+        (state: Ballot, _action: VoteAction) => {
           const unpackedState1 = PartialBallot.unpack(state.partial1);
           const unpackedState2 = PartialBallot.unpack(state.partial2);
-          const unpackedAction1 = PartialBallot.unpack(_action.partial1);
-          const unpackedAction2 = PartialBallot.unpack(_action.partial2);
+          const unpackedAction1 = PartialBallot.unpack(_action.ballot.partial1);
+          const unpackedAction2 = PartialBallot.unpack(_action.ballot.partial2);
           for (let i = 0; i < PartialBallot.l; i++) {
             unpackedState1[i] = unpackedState1[i].add(unpackedAction1[i])
           }
           for (let i = 0; i < PartialBallot.l; i++) {
             unpackedState2[i] = unpackedState2[i].add(unpackedAction2[i])
           }
+          this.token.burn({
+            address: _action.sender,
+            amount: UInt64.from(_action.amount)
+          });
           return {
             partial1: PartialBallot.fromUInt32s(unpackedState1).packed,
             partial2: PartialBallot.fromUInt32s(unpackedState2).packed

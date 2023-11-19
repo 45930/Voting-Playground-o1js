@@ -79,7 +79,14 @@ describe("TokenElection", () => {
     });
 
     it("has the correct number of tokens remaining", async () => {
-      const remainingVoteBalance = await Mina.getBalance(sender, zkapp.token.id);
+      let remainingVoteBalance = await Mina.getBalance(sender, zkapp.token.id);
+      expect(remainingVoteBalance.toString()).toBe(String(50_000))
+      const tx2 = await Mina.transaction(sender, () => {
+        zkapp.reduceVotes();
+      })
+      await tx2.prove();
+      await tx2.sign([senderKey]).send();
+      remainingVoteBalance = await Mina.getBalance(sender, zkapp.token.id);
       expect(remainingVoteBalance.toString()).toBe(String(50_000 - 110))
     });
 
