@@ -74,7 +74,7 @@ export class TokenElection extends SmartContract {
 
     let pendingActions = this.reducer.getActions({
       fromActionState: actionState,
-    });
+    }).slice(0, 3); // at most, reduce 3 actions
 
     let { state: newVotes, actionState: newActionState } =
       this.reducer.reduce(
