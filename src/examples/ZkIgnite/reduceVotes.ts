@@ -1,5 +1,5 @@
 import { AccountUpdate, Mina, PrivateKey, PublicKey, UInt32, fetchAccount, setArchiveGraphqlEndpoint } from 'o1js';
-import { TokenElection, IpfsHash, PartialBallot, Ballot } from './../../TokenElection.js';
+import { TokenElection, IpfsHash, PartialBallot, Ballot } from '../../TokenElection/BaseTokenElection.js';
 import fs from 'fs/promises';
 
 import * as readline from 'node:readline/promises';  // This uses the promise-based APIs

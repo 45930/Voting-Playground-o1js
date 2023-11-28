@@ -1,8 +1,8 @@
-const ELECTION_DETAILS_KEY = 'QmPKD74Pfc6aH5Suh1EXqjbfKBYDs5QVARxmpqsNKMKxe3';
+const ELECTION_DETAILS_KEY = 'Qmc8yEQqnYzrAhGSJgjLLyTSUxtsZmxn1grtwVATPSpS4E';
 
 import { Mina, PrivateKey } from 'o1js';
 import fs from 'fs/promises';
-import { TokenElection, IpfsHash } from './TokenElection.js';
+import { TokenElection, IpfsHash } from './TokenElection/BaseTokenElection.js';
 
 // check command line arg
 let deployAlias = process.argv[2];

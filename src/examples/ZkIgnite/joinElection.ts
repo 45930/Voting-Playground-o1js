@@ -1,5 +1,5 @@
 import { AccountUpdate, Mina, PrivateKey, PublicKey, fetchAccount } from 'o1js';
-import { TokenElection, IpfsHash } from './../../TokenElection.js';
+import { TokenElection, IpfsHash } from '../../TokenElection/BaseTokenElection.js';
 import fs from 'fs/promises';
 
 import * as readline from 'node:readline/promises';  // This uses the promise-based APIs

@@ -1,4 +1,4 @@
-import { Ballot, PartialBallot, TokenElection } from './TokenElection';
+import { Ballot, PartialBallot, TokenElection } from './BaseTokenElection';
 import { AccountUpdate, Mina, PrivateKey, PublicKey, UInt32 } from 'o1js';
 
 describe("TokenElection", () => {

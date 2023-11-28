@@ -1,4 +1,21 @@
 {
   "version": 1,
-  "deployAliases": {}
+  "deployAliases": {
+    "berkeleyx": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley.json",
+      "feepayerKeyPath": "/Users/cobydurling/.cache/zkapp-cli/keys/berkeley-deployer.json",
+      "feepayerAlias": "berkeley-deployer",
+      "fee": "0.1",
+      "smartContract": "TokenElection"
+    },
+    "berkeley": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/berkeley.json",
+      "feepayerKeyPath": "/Users/cobydurling/.cache/zkapp-cli/keys/berkeley-deployer.json",
+      "feepayerAlias": "berkeley-deployer",
+      "fee": "0.1",
+      "smartContract": "TokenElection"
+    }
+  }
 }

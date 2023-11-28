@@ -1,5 +1,5 @@
 import { Mina, PublicKey, fetchAccount } from 'o1js';
-import { TokenElection, IpfsHash } from './../../TokenElection.js';
+import { TokenElection, IpfsHash } from '../../TokenElection/BaseTokenElection.js';
 
 import * as readline from 'node:readline/promises';  // This uses the promise-based APIs
 import { stdin as input, stdout as output } from 'node:process';
