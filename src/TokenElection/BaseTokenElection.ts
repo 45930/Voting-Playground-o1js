@@ -30,6 +30,7 @@ export class TokenElection extends SmartContract {
       partial2: PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 0n, 0n, 0n]).packed
     });
     this.actionState.set(Reducer.initialActionState);
+    this.account.delegate.set(this.sender);
   }
 
   @method
