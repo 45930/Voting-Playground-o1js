@@ -9,6 +9,7 @@ describe("WhitelistTokenElection", () => {
   let senderKey: PrivateKey;
   let initialBalance = 10_000_000_000;
   let zkapp: WhitelistTokenElection;
+  let Local = Mina.LocalBlockchain({ proofsEnabled: true });
 
   beforeAll(async () => {
     console.time('compile');
@@ -17,7 +18,6 @@ describe("WhitelistTokenElection", () => {
   });
 
   beforeEach(async () => {
-    let Local = Mina.LocalBlockchain({ proofsEnabled: true });
     zkappKey = PrivateKey.random();
     zkappAddress = zkappKey.toPublicKey();
     zkapp = new WhitelistTokenElection(zkappAddress);
@@ -29,7 +29,6 @@ describe("WhitelistTokenElection", () => {
 
   describe("Votes in the WhitelistTokenElection", () => {
     beforeEach(async () => {
-      let Local = Mina.LocalBlockchain({ proofsEnabled: true });
       zkappKey = PrivateKey.random();
       zkappAddress = zkappKey.toPublicKey();
       zkapp = new WhitelistTokenElection(zkappAddress);
@@ -94,7 +93,6 @@ describe("WhitelistTokenElection", () => {
     });
 
     it("Updates the State", async () => {
-      let Local = Mina.LocalBlockchain({ proofsEnabled: true });
       const wlPks = [
         Local.testAccounts[1].privateKey,
         Local.testAccounts[2].privateKey,
@@ -106,11 +104,11 @@ describe("WhitelistTokenElection", () => {
         wlPks[1].toPublicKey(),
         wlPks[2].toPublicKey()
       ]
-      const tx2 = await Mina.transaction(sender, () => {
+      const tx2 = await Mina.transaction(wl[0], () => {
         zkapp.reduceVotes();
       })
       await tx2.prove();
-      await tx2.sign([senderKey, wlPks[0]]).send();
+      await tx2.sign([wlPks[0]]).send();
       const zkappState = zkapp.ballot.get();
       const pb1 = PartialBallot.unpack(zkappState.partial1);
       const pb2 = PartialBallot.unpack(zkappState.partial2);
@@ -119,19 +117,39 @@ describe("WhitelistTokenElection", () => {
     });
 
     it("has the correct number of tokens remaining", async () => {
-      let remainingVoteBalance = await Mina.getBalance(sender, zkapp.token.id);
+      const wlPks = [
+        Local.testAccounts[1].privateKey,
+        Local.testAccounts[2].privateKey,
+        Local.testAccounts[3].privateKey
+      ]
+      const wl = [
+        wlPks[0].toPublicKey(),
+        wlPks[1].toPublicKey(),
+        wlPks[2].toPublicKey()
+      ]
+      let remainingVoteBalance = await Mina.getBalance(wl[0], zkapp.token.id);
       expect(remainingVoteBalance.toString()).toBe(String(50_000))
-      const tx2 = await Mina.transaction(sender, () => {
+      const tx2 = await Mina.transaction(wl[0], () => {
         zkapp.reduceVotes();
       })
       await tx2.prove();
-      await tx2.sign([senderKey]).send();
-      remainingVoteBalance = await Mina.getBalance(sender, zkapp.token.id);
+      await tx2.sign([wlPks[0]]).send();
+      remainingVoteBalance = await Mina.getBalance(wl[0], zkapp.token.id);
       expect(remainingVoteBalance.toString()).toBe(String(50_000 - 110))
     });
 
     it("updates a second time", async () => {
-      let tx = await Mina.transaction(sender, () => {
+      const wlPks = [
+        Local.testAccounts[1].privateKey,
+        Local.testAccounts[2].privateKey,
+        Local.testAccounts[3].privateKey
+      ]
+      const wl = [
+        wlPks[0].toPublicKey(),
+        wlPks[1].toPublicKey(),
+        wlPks[2].toPublicKey()
+      ]
+      let tx = await Mina.transaction(wl[0], () => {
         const partialBallot1 = PartialBallot.fromBigInts([101n, 0n, 0n, 0n, 0n, 0n, 0n]);
         const partialBallot2 = PartialBallot.fromBigInts([0n, 0n, 0n, 0n, 20n, 0n, 40n]);
         const myVote = new Ballot({
@@ -141,13 +159,13 @@ describe("WhitelistTokenElection", () => {
         zkapp.castVote(myVote, UInt32.from(161));
       });
       await tx.prove();
-      await tx.sign([senderKey]).send();
+      await tx.sign([wlPks[0]]).send();
 
-      const tx2 = await Mina.transaction(sender, () => {
+      const tx2 = await Mina.transaction(wl[0], () => {
         zkapp.reduceVotes();
       })
       await tx2.prove();
-      await tx2.sign([senderKey]).send();
+      await tx2.sign([wlPks[0]]).send();
       const zkappState = zkapp.ballot.get();
       const pb1 = PartialBallot.unpack(zkappState.partial1);
       const pb2 = PartialBallot.unpack(zkappState.partial2);
