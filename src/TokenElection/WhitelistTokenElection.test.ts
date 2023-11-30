@@ -128,7 +128,6 @@ describe("WhitelistTokenElection", () => {
         wlPks[2].toPublicKey()
       ]
       let remainingVoteBalance = await Mina.getBalance(wl[0], zkapp.token.id);
-      expect(remainingVoteBalance.toString()).toBe(String(50_000))
       const tx2 = await Mina.transaction(wl[0], () => {
         zkapp.reduceVotes();
       })

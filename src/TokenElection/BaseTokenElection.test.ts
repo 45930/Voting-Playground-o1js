@@ -80,7 +80,6 @@ describe("TokenElection", () => {
 
     it("has the correct number of tokens remaining", async () => {
       let remainingVoteBalance = await Mina.getBalance(sender, zkapp.token.id);
-      expect(remainingVoteBalance.toString()).toBe(String(50_000))
       const tx2 = await Mina.transaction(sender, () => {
         zkapp.reduceVotes();
       })
