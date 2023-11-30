@@ -11,9 +11,7 @@ export class Ballot extends Struct({
 }) { }
 
 export class VoteAction extends Struct({
-  ballot: Ballot,
-  sender: PublicKey,
-  amount: UInt64
+  ballot: Ballot
 }) { }
 
 export class WhitelistTokenElection extends SmartContract {
@@ -89,10 +87,12 @@ export class WhitelistTokenElection extends SmartContract {
       voteSum = voteSum.add(unpackedVote2[i]);
     }
     voteSum.assertEquals(amount); // sum of votes must equal asserted amount (can vote for multiple options)
-    this.reducer.dispatch({
-      ballot: vote,
-      sender: this.sender,
+    this.token.burn({
+      address: this.sender,
       amount: UInt64.from(amount)
+    });
+    this.reducer.dispatch({
+      ballot: vote
     });
   }
 
@@ -120,10 +120,6 @@ export class WhitelistTokenElection extends SmartContract {
           for (let i = 0; i < PartialBallot.l; i++) {
             unpackedState2[i] = unpackedState2[i].add(unpackedAction2[i])
           }
-          this.token.burn({
-            address: _action.sender,
-            amount: UInt64.from(_action.amount)
-          });
           return {
             partial1: PartialBallot.fromUInt32s(unpackedState1).packed,
             partial2: PartialBallot.fromUInt32s(unpackedState2).packed
